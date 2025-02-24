@@ -11,7 +11,7 @@
   "publisher": "the-repo-mule",
   "displayName": "Sym Pick",
   "description": "Sym-Pick is a lightweight and efficient VS Code extension that makes inserting Unicode symbols effortless. It provides a searchable list of symbols and emojis that can be inserted into your code with a single click.",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "icon": "./images/icon.png",
   "bugs": {
 		"url": "https://github.com/bwlange/sym-pick/issues",
