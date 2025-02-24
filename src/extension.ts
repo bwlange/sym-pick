@@ -353,29 +353,30 @@ const supportedLanguages = [
 	"fsharp", "graphql", "groovy", "haskell", "handlebars", "hcl", 
 	"jsonc", "kotlin", "less", "lua", "makefile", "nim", "objective-c", "perl",
 	"perl6", "pgsql", "powershell", "r", "ruby", "rust", "scala", "shellscript",
-	"solidity", "sql", "stylus", "swift", "tcl", "twig", "yaml"
+	"solidity", "sql", "stylus", "swift", "tcl", "twig", "yaml", "forcesourcemanifest"
+];
+
+// **Languages that are unrestricted (allow symbols anywhere, not just in comments/strings)**
+const UNRESTRICTED_LANGUAGES: string[] = [
+    "markdown", "git-commit", "yaml", "jsonc", "xml", "html", "forcesourcemanifest"
 ];
 
 // **Define comment patterns for each language**
 // Used to detect whether the cursor is inside a comment
 const COMMENT_PATTERNS: Record<string, RegExp> = {
     php: /\/\/.*|\/\*[\s\S]*?\*\//,
-    html: /<!--[\s\S]*?-->/,
     javascript: /\/\/.*|\/\*[\s\S]*?\*\//,
     javascriptreact: /\/\/.*|\/\*[\s\S]*?\*\//,
     css: /\/\*[\s\S]*?\*\//,
-    "git-commit": /#.*/,
     go: /\/\/.*|\/\*[\s\S]*?\*\//,
     java: /\/\/.*|\/\*[\s\S]*?\*\//,
     julia: /#.*$/,
-    markdown: /<!--[\s\S]*?-->/,
     jade: /\/\/-.*/,
     python: /#.*$/,
     scss: /\/\*[\s\S]*?\*\//,
     typescript: /\/\/.*|\/\*[\s\S]*?\*\//,
     typescriptreact: /\/\/.*|\/\*[\s\S]*?\*\//,
     vb: /'.*$/,
-    xml: /<!--[\s\S]*?-->/,
     vue: /<!--[\s\S]*?-->/,
     asciidoc: /\/\/.*|\/\*[\s\S]*?\*\//,
     apex: /\/\/.*|\/\*[\s\S]*?\*\//,
@@ -395,7 +396,6 @@ const COMMENT_PATTERNS: Record<string, RegExp> = {
     haskell: /--.*$/,
     handlebars: /{{!--[\s\S]*?--}}/,
     hcl: /#.*/,
-    jsonc: /\/\/.*|\/\*[\s\S]*?\*\//,
     kotlin: /\/\/.*|\/\*[\s\S]*?\*\//,
     less: /\/\*[\s\S]*?\*\//,
     lua: /--.*$/,
@@ -416,29 +416,25 @@ const COMMENT_PATTERNS: Record<string, RegExp> = {
     stylus: /\/\/.*|\/\*[\s\S]*?\*\//,
     swift: /\/\/.*|\/\*[\s\S]*?\*\//,
     tcl: /#.*/,
-    twig: /{#.*?#}/,
-    yaml: /#.*/
+    twig: /{#.*?#}/
 };
 
 // **Define string patterns for each language**
 // Used to detect whether the cursor is inside a string
 const STRING_PATTERNS: Record<string, RegExp> = {
     php: /(['"`])(?:\\.|(?!\1).)*\1/g,
-    html: /"(.*?)"|'(.*?)'/g,
     javascript: /(['"`])(?:\\.|(?!\1).)*\1/g,
     javascriptreact: /(['"`])(?:\\.|(?!\1).)*\1/g,
     css: /"(.*?)"|'(.*?)'/g,
     go: /(['"`])(?:\\.|(?!\1).)*\1/g,
     java: /(['"`])(?:\\.|(?!\1).)*\1/g,
     julia: /(['"`])(?:\\.|(?!\1).)*\1/g,
-    markdown: /"(.*?)"|'(.*?)'/g,
     jade: /"(.*?)"|'(.*?)'/g,
     python: /(['"`])(?:\\.|(?!\1).)*\1/g,  // Includes triple quotes
     scss: /"(.*?)"|'(.*?)'/g,
     typescript: /(['"`])(?:\\.|(?!\1).)*\1/g,
     typescriptreact: /(['"`])(?:\\.|(?!\1).)*\1/g,
     vb: /"(.*?)"/g,
-    xml: /"(.*?)"|'(.*?)'/g,
     vue: /"(.*?)"|'(.*?)'/g,
     asciidoc: /"(.*?)"|'(.*?)'/g,
     apex: /(['"`])(?:\\.|(?!\1).)*\1/g,
@@ -458,7 +454,6 @@ const STRING_PATTERNS: Record<string, RegExp> = {
     haskell: /"(.*?)"|'(.*?)'/g,
     handlebars: /"(.*?)"|'(.*?)'/g,
     hcl: /"(.*?)"|'(.*?)'/g,
-    jsonc: /"(.*?)"|'(.*?)'/g,
     kotlin: /(['"`])(?:\\.|(?!\1).)*\1/g,
     less: /"(.*?)"|'(.*?)'/g,
     lua: /(['"`])(?:\\.|(?!\1).)*\1/g,
@@ -479,9 +474,17 @@ const STRING_PATTERNS: Record<string, RegExp> = {
     stylus: /"(.*?)"|'(.*?)'/g,
     swift: /(['"`])(?:\\.|(?!\1).)*\1/g,
     tcl: /(['"`])(?:\\.|(?!\1).)*\1/g,
-    twig: /"(.*?)"|'(.*?)'/g,
-    yaml: /"(.*?)"|'(.*?)'/g
+    twig: /"(.*?)"|'(.*?)'/g
 };
+
+/**
+ * Determines if the given language should be restricted to comments and strings.
+ * @param languageId The language identifier from the document.
+ * @returns `true` if restricted (requires comment/string), `false` if unrestricted.
+ */
+function isRestrictedLanguage(languageId: string): boolean {
+    return !UNRESTRICTED_LANGUAGES.includes(languageId);
+}
 
 // **Function to check if the cursor is inside a comment**
 function isInsideComment(document: vscode.TextDocument, position: vscode.Position): boolean {
@@ -515,7 +518,7 @@ export function activate(context: vscode.ExtensionContext) {
         {
             provideCompletionItems(document, position, token, context) {
                 // Ensure the cursor is inside a comment or string
-                if (!isInsideComment(document, position) && !isInsideString(document, position)) {
+                if (isRestrictedLanguage(document.languageId) && !isInsideComment(document, position) && !isInsideString(document, position)) {
                     return [];
                 }
 
