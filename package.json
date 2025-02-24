@@ -49,7 +49,45 @@
       { "id": "vue" },
       { "id": "asciidoc" },
       { "id": "apex" },
-      { "id": "csharp" }
+      { "id": "csharp" },
+      { "id": "c" },
+      { "id": "cpp" },
+      { "id": "clojure" },
+      { "id": "coffee" },
+      { "id": "dart" },
+      { "id": "dockerfile" },
+      { "id": "elixir" },
+      { "id": "elm" },
+      { "id": "erlang" },
+      { "id": "fsharp" },
+      { "id": "graphql" },
+      { "id": "groovy" },
+      { "id": "haskell" },
+      { "id": "handlebars" },
+      { "id": "hcl" },
+      { "id": "jsonc" },
+      { "id": "kotlin" },
+      { "id": "less" },
+      { "id": "lua" },
+      { "id": "makefile" },
+      { "id": "nim" },
+      { "id": "objective-c" },
+      { "id": "perl" },
+      { "id": "perl6" },
+      { "id": "pgsql" },
+      { "id": "powershell" },
+      { "id": "r" },
+      { "id": "ruby" },
+      { "id": "rust" },
+      { "id": "scala" },
+      { "id": "shellscript" },
+      { "id": "solidity" },
+      { "id": "sql" },
+      { "id": "stylus" },
+      { "id": "swift" },
+      { "id": "tcl" },
+      { "id": "twig" },
+      { "id": "yaml" }
     ],
     "commands": [
       {
@@ -64,12 +102,6 @@
         "key": "ctrl+alt+s",
         "when": "editorTextFocus"
       }
-    ],
-    "symbols": [
-        {
-            "language": "*",
-            "path": "./src/json/symbols.json"
-        }
     ]
   },
   "scripts": {

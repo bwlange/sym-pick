@@ -1,15 +1,26 @@
-# Sym-Pick VS Code Extension
+# Sym-Pick Unicode Symbol Picker for VS Code
 
-## Overview
+## 🔥 Overview
 
-The Sym-Pick extension for Visual Studio Code enhances your development experience. This extension helps you insert Unicode symbols into your code comments, enhancing them visually.
+Tired of searching for Unicode symbols? Sym-Pick makes it fast and easy to insert symbols directly into your comments and strings—perfect for code annotations, documentation, and more!
 
-## Features
+With Sym-Pick, just type : inside a comment or string, and a searchable dropdown appears, letting you pick the perfect symbol with a single keystroke. No more copy-pasting from the internet! 😎
+ 
+ 
+ 
+  
+## 🚀 Features
 
-- **Symbol Autocomplete**: Allows you to type ":" inside a string or comment block triggering an autocomplete drop down that allows you to select the symbol you desire.
+✅ **Instant Symbol Autocomplete** – Type `:` inside a string or comment block to trigger an autocomplete list.  
+✅ **Lightning-Fast Insertion** – Click or hit Enter, and your selected symbol appears instantly.  
+✅ **Supports 60+ Programming Languages** – Works across JavaScript, Python, HTML, YAML, and more!  
+✅ **Smart Context Awareness** – Symbols **only** appear where they make sense (inside comments & strings).  
+✅ **Easy Manual Trigger** – Press `Ctrl+Alt+S` to open the picker anytime.  
+✅ **Emoji & Unicode Library** – Includes 🚀, 🎯, 📦, ⚠️, and many more!  
 
 
-## Installation
+
+## 📥 Installation
 
 1. Open Visual Studio Code.
 2. Go to the Extensions view by clicking on the Extensions icon in the Activity Bar on the side of the window.
@@ -17,15 +28,37 @@ The Sym-Pick extension for Visual Studio Code enhances your development experien
 4. Click `Install` to install the extension.
 5. Reload Visual Studio Code to activate the extension.
 
-## Usage
+Boom! You're all set. 🎯  
 
-1. Open a project or create a new one in Visual Studio Code.
-2. Ensure the Sym-Pick extension is activated.
-3. Start coding with symbol selection feature.
 
-## Contributing
 
-I welcome contributions to the Sym-Pick extension. To contribute:
+## 🎯 How to Use
+
+### **🔍 Auto-Complete Symbol Picker**
+1️. Open a file in any **supported language** (e.g., JavaScript, Python, HTML, Markdown).  
+2️. Inside a **comment** or **string**, type `:` and start typing a keyword (e.g., `:alert`).  
+3️. Select a **Unicode symbol** from the dropdown list.  
+4️. Press **Enter** and watch it appear!  
+
+### **⚡ Manually Trigger the Symbol Picker**
+Press `Ctrl+Alt+S` to insert a `:` and **open the autocomplete dropdown instantly**.  
+
+
+
+## 🛠️ Supported Languages
+
+Sym-Pick works in **over 60 languages**, including:  
+✔ JavaScript, TypeScript, Python, HTML, CSS, Markdown  
+✔ YAML, XML, JSONC, SQL, GraphQL, Rust, C, C++, Java, Kotlin, Ruby, PHP  
+✔ Many more!  
+
+🔹 See the full list in `package.json`.  
+
+
+
+## 📝 Contributing
+
+Want to improve **Sym-Pick**? 🎉 Contributions are welcome!  
 
 1. Fork the repository.
 2. Create a new branch for your feature or bug fix.
@@ -33,10 +66,17 @@ I welcome contributions to the Sym-Pick extension. To contribute:
 4. Push your changes to your fork.
 5. Submit a pull request.
 
-## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-## Contact
+## 📜 License
 
-For any questions or feedback, please contact me at [bwlange@gmail.com](mailto:bwlange@gmail.com).
+This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
+
+
+
+## 📬 Contact
+
+💌 Got questions, feedback, or ideas?  
+Reach out at **[bwlange@gmail.com](mailto:bwlange@gmail.com)** or open an issue on [GitHub](https://github.com/bwlange/sym-pick/issues).  
+
+Let's make **coding more expressive & fun**—one symbol at a time! 🎨✨  
