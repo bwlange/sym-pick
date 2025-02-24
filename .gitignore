@@ -57,3 +57,8 @@ desktop.ini
 # Ignore coverage reports (if using test frameworks)
 coverage/
 nyc_output/
+
+# Ignore GitHub Actions logs & cache (but keep workflow files)
+.github/*~
+.github/workflows/*.log
+.github/workflows/*.cache
