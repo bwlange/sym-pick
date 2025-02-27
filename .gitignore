@@ -22,6 +22,7 @@ dist/
 
 # Ignore VSCode settings and workspace files
 .vscode/
+!.vscode/tasks.json
 .history/
 *.code-workspace
 
