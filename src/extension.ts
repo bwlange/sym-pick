@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { SYMBOLS } from "./symbols";
-
+import { SymCodeCommentFoldingRangeProvider } from "./SymFoldingRangeProvider";
 
 // **List of supported languages for auto-completion**
 const supportedLanguages = [
@@ -135,48 +135,26 @@ const STRING_PATTERNS: Record<string, RegExp> = {
     twig: /"(.*?)"|'(.*?)'/g
 };
 
-/**
- * Determines if the given language should be restricted to comments and strings.
- * @param languageId The language identifier from the document.
- * @returns `true` if restricted (requires comment/string), `false` if unrestricted.
- */
-function isRestrictedLanguage(languageId: string): boolean {
-    return !UNRESTRICTED_LANGUAGES.includes(languageId);
-}
-
-// **Function to check if the cursor is inside a comment**
-function isInsideComment(document: vscode.TextDocument, position: vscode.Position): boolean {
-    const languageId = document.languageId;
-    const lineText = document.lineAt(position.line).text.substring(0, position.character);
-    return COMMENT_PATTERNS[languageId] ? COMMENT_PATTERNS[languageId].test(lineText) : false;
-}
-
-// **Function to check if the cursor is inside a string**
-function isInsideString(document: vscode.TextDocument, position: vscode.Position): boolean {
-    const languageId = document.languageId;
-    const lineText = document.lineAt(position.line).text;
-    
-    // Find all matching string delimiters on the line
-    const match = STRING_PATTERNS[languageId] ? lineText.match(STRING_PATTERNS[languageId]) : null;
-    if (!match) { return false; }
-
-    // Check if the cursor is inside the matched string
-    return match.some((str) => {
-        const start = lineText.indexOf(str);
-        const end = start + str.length;
-        return position.character > start && position.character < end;
-    });
-}
-
 // **Function to activate the extension**
 export function activate(context: vscode.ExtensionContext) {
+
+    const disposables: vscode.Disposable[] = [];
+    const foldingRangeProvider = new SymCodeCommentFoldingRangeProvider();
+
+    vscode.languages.registerFoldingRangeProvider({ scheme: 'file' }, foldingRangeProvider);
+    disposables.push(
+        vscode.commands.registerCommand('extension:foldingRangeUpdateCommand', () => {
+            foldingRangeProvider.refresh();
+        })
+    );
+
     // Register the completion provider for symbol auto-completion
-    const provider = vscode.languages.registerCompletionItemProvider(
-        supportedLanguages,
+    const completionItemProvider = vscode.languages.registerCompletionItemProvider(supportedLanguages, 
         {
             provideCompletionItems(document, position, token, context) {
+
                 // Ensure the cursor is inside a comment or string
-                if (isRestrictedLanguage(document.languageId) && !isInsideComment(document, position) && !isInsideString(document, position)) {
+                if (isRestrictedLanguage(document.languageId) && !isInsideComment(document, position, token, foldingRangeProvider) && !isInsideString(document, position)) {
                     return [];
                 }
 
@@ -190,7 +168,7 @@ export function activate(context: vscode.ExtensionContext) {
 
                     // **Only use TextEdit, remove insertText to prevent duplication**
                     completion.additionalTextEdits = [
-                        vscode.TextEdit.replace(new vscode.Range(position.translate(0, symbol.length*-1), position), "")
+                        vscode.TextEdit.replace(new vscode.Range(position.translate(0, -1), position), "")
                     ];
                     
                     // **Force VS Code to respect original order by assigning incremental sortText**
@@ -220,6 +198,68 @@ export function activate(context: vscode.ExtensionContext) {
         });
     });
 
-    // Register both the completion provider and manual trigger command
-    context.subscriptions.push(provider, showSymbolCompletionCommand);
+    // Register the completion providers and commands
+    context.subscriptions.push(completionItemProvider, showSymbolCompletionCommand, ...disposables);
+}
+
+/**
+ * Determines if the given language should be restricted to comments and strings.
+ * @param languageId The language identifier from the document.
+ * @returns `true` if restricted (requires comment/string), `false` if unrestricted.
+ */
+function isRestrictedLanguage(languageId: string): boolean {
+    return !UNRESTRICTED_LANGUAGES.includes(languageId);
+}
+
+// **Function to check if the cursor is inside a code block
+function isInsideCodeBlock(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, line: vscode.TextLine, foldingRangeProvider: SymCodeCommentFoldingRangeProvider): boolean {
+    const lineRange = line?.range;
+
+    if (!lineRange) { return false; }
+
+    let foldingRanges = foldingRangeProvider.provideFoldingRanges(document, { levels: 1 }, token);
+
+    if (!foldingRanges) { return false; }
+
+    for (let range of foldingRanges as vscode.FoldingRange[] || []) {
+        if (range.start <= lineRange.start.line && range.end >= lineRange.end.line) {
+            if (range.kind === vscode.FoldingRangeKind.Comment) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+// **Function to check if the cursor is inside a comment**
+function isInsideComment(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, foldingRangeProvider: SymCodeCommentFoldingRangeProvider): boolean {
+    const activeEditor = vscode.window.activeTextEditor;
+    const line = activeEditor?.document.lineAt(position.line);
+    const languageId = document.languageId;
+    const lineText = document.lineAt(position.line).text.substring(0, position.character);
+
+    const isSingleLineCommment = COMMENT_PATTERNS[languageId] ? COMMENT_PATTERNS[languageId].test(lineText) : false;
+
+    if (isSingleLineCommment) { return true; }
+
+    if (!line) { return false; }
+    return isInsideCodeBlock(document, position, token, line, foldingRangeProvider);
+}
+
+// **Function to check if the cursor is inside a string**
+function isInsideString(document: vscode.TextDocument, position: vscode.Position): boolean {
+    const languageId = document.languageId;
+    const lineText = document.lineAt(position.line).text;
+    
+    // Find all matching string delimiters on the line
+    const match = STRING_PATTERNS[languageId] ? lineText.match(STRING_PATTERNS[languageId]) : null;
+    if (!match) { return false; }
+
+    // Check if the cursor is inside the matched string
+    return match.some((str) => {
+        const start = lineText.indexOf(str);
+        const end = start + str.length;
+        return position.character > start && position.character < end;
+    });
 }
