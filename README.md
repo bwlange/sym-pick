@@ -8,6 +8,11 @@ With Sym-Pick, just type : inside a comment or string, and a searchable dropdown
  
  
  
+## 👀 Preview
+ 
+![Preview of extension](https://raw.githubusercontent.com/bwlange/sym-pick/refs/heads/main/images/screenshot.png)
+
+
   
 ## 🚀 Features
 
